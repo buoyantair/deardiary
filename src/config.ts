@@ -1,34 +1,55 @@
 import { constants as fsConstants, promises as fsPromises } from "fs";
 
-const { HOME, XDG_DATA_HOME, XDG_CONFIG_HOME } = process.env;
-const DATA_DIR = XDG_DATA_HOME
-  ? `${XDG_DATA_HOME}/deardiary`
-  : `${HOME}/.local/share/deardiary`;
-const CONFIG_DIR = XDG_CONFIG_HOME
-  ? `${XDG_CONFIG_HOME}/deardiary`
-  : `${HOME}/.config/deardiary`;
-const CONFIG_PATH = `${CONFIG_DIR}/deardiary.settings`;
-
 interface Configuration {
   diaryPath: string;
 }
 
-const defaultConfig: Configuration = {
-  diaryPath: `${DATA_DIR}/log`
-};
-
-async function generateDefaultConfig(): Promise<Configuration> {
+async function generateDefaultConfig(
+  dataDir: string,
+  configDir: string,
+  configPath: string,
+  defaultConfig: Configuration
+): Promise<Configuration> {
   try {
-    await fsPromises.mkdir(CONFIG_DIR, { recursive: true });
-    await fsPromises.writeFile(CONFIG_PATH, JSON.stringify(defaultConfig));
+    await fsPromises.mkdir(configDir, { recursive: true });
+    await fsPromises.writeFile(configPath, JSON.stringify(defaultConfig));
   } catch (e) {
     console.log("Failed to generate a new config", e);
   }
 
-  return getConfig();
+  return getConfig(dataDir, configDir);
 }
 
-async function getConfig(): Promise<Configuration> {
+async function getConfig(
+  dataDir: string,
+  configDir: string
+): Promise<Configuration> {
+  const { HOME, XDG_DATA_HOME, XDG_CONFIG_HOME } = process.env;
+
+  let DATA_DIR,
+    CONFIG_DIR,
+    CONFIG_PATH = null;
+
+  if (dataDir !== undefined) {
+    DATA_DIR = dataDir;
+  } else {
+    DATA_DIR = XDG_DATA_HOME
+      ? `${XDG_DATA_HOME}/deardiary`
+      : `${HOME}/.local/share/deardiary`;
+  }
+
+  if (configDir !== undefined) {
+    CONFIG_DIR = configDir;
+  } else {
+    CONFIG_DIR = XDG_CONFIG_HOME
+      ? `${XDG_CONFIG_HOME}/deardiary`
+      : `${HOME}/.config/deardiary`;
+  }
+  CONFIG_PATH = `${CONFIG_DIR}/deardiary.settings`;
+
+  const defaultConfig: Configuration = {
+    diaryPath: `${DATA_DIR}/log`
+  };
   let config;
   try {
     await fsPromises.access(CONFIG_PATH, fsConstants.R_OK && fsConstants.W_OK);
@@ -40,7 +61,12 @@ async function getConfig(): Promise<Configuration> {
   } catch (e) {
     if (e.code === "ENOENT") {
       console.log(`Config doesn't exist, creating new config...`);
-      return generateDefaultConfig();
+      return generateDefaultConfig(
+        DATA_DIR,
+        CONFIG_DIR,
+        CONFIG_PATH,
+        defaultConfig
+      );
     } else {
       console.error(e);
     }
@@ -51,6 +77,5 @@ async function getConfig(): Promise<Configuration> {
 
 export default {
   getConfig,
-  generateDefaultConfig,
-  defaultConfig
+  generateDefaultConfig
 };
