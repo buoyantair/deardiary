@@ -51,5 +51,6 @@ async function getConfig(): Promise<Configuration> {
 
 export default {
   getConfig,
-  generateDefaultConfig
+  generateDefaultConfig,
+  defaultConfig
 };
