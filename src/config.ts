@@ -1,20 +1,24 @@
 import { constants as fsConstants, promises as fsPromises } from "fs";
 
-interface Configuration {
+export interface IConfiguration {
   diaryPath: string;
 }
 
-async function generateDefaultConfig(
+async function generateConfig(
   dataDir: string,
   configDir: string,
   configPath: string,
-  defaultConfig: Configuration
-): Promise<Configuration> {
+  config: IConfiguration
+): Promise<IConfiguration> {
   try {
     await fsPromises.mkdir(configDir, { recursive: true });
-    await fsPromises.writeFile(configPath, JSON.stringify(defaultConfig));
+    await fsPromises.writeFile(configPath, JSON.stringify(config));
   } catch (e) {
-    console.log("Failed to generate a new config", e);
+    if (e.code === "EISDIR") {
+      await fsPromises.writeFile(configPath, JSON.stringify(config));
+    } else {
+      console.log("Failed to generate a new config", e);
+    }
   }
 
   return getConfig(dataDir, configDir);
@@ -23,7 +27,7 @@ async function generateDefaultConfig(
 async function getConfig(
   dataDir: string,
   configDir: string
-): Promise<Configuration> {
+): Promise<IConfiguration> {
   const { HOME, XDG_DATA_HOME, XDG_CONFIG_HOME } = process.env;
 
   let DATA_DIR,
@@ -47,9 +51,6 @@ async function getConfig(
   }
   CONFIG_PATH = `${CONFIG_DIR}/deardiary.settings`;
 
-  const defaultConfig: Configuration = {
-    diaryPath: `${DATA_DIR}/log`
-  };
   let config;
   try {
     await fsPromises.access(CONFIG_PATH, fsConstants.R_OK && fsConstants.W_OK);
@@ -60,12 +61,10 @@ async function getConfig(
     config = JSON.parse(rawConfig.toString());
   } catch (e) {
     if (e.code === "ENOENT") {
-      console.log(`Config doesn't exist, creating new config...`);
-      return generateDefaultConfig(
-        DATA_DIR,
-        CONFIG_DIR,
-        CONFIG_PATH,
-        defaultConfig
+      console.log(
+        `Config doesn't exist, please generate one using ConfigurationManager.generateConfig()
+          before calling getConfig()`,
+        e
       );
     } else {
       console.error(e);
@@ -77,5 +76,5 @@ async function getConfig(
 
 export default {
   getConfig,
-  generateDefaultConfig
+  generateConfig
 };
