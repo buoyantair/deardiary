@@ -92,5 +92,6 @@ function getDatabase() {}
 
 export default {
   getConfig,
-  generateConfig
+  generateConfig,
+  getDatabase
 };

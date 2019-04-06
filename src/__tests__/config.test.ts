@@ -1,5 +1,6 @@
 import { constants as fsConstants, promises as fsPromises } from "fs";
 import ConfigurationManager, { IConfiguration } from "../config";
+import { Database } from "sqlite3";
 const CACHE_PATH = `${__dirname}/cache`;
 const CACHE_CONFIG_DIR_PATH = `${CACHE_PATH}/config`;
 const CACHE_DATA_DIR_PATH = `${CACHE_PATH}/data`;
@@ -56,6 +57,13 @@ describe("Configuration Management", () => {
 
       expect(result).toEqual(generatedConfig);
       expect(typeof result.diaryPath).toBe("string");
+    });
+  });
+
+  describe("getDatabase()", () => {
+    test("Returns a new database object when called", () => {
+      const database = ConfigurationManager.getDatabase();
+      expect(database).toBeInstanceOf(Database);
     });
   });
 });
