@@ -1,4 +1,5 @@
 import { constants as fsConstants, promises as fsPromises } from "fs";
+import { sqlite3 } from "sqlite3";
 
 export interface IConfiguration {
   diaryPath: string;
@@ -81,6 +82,13 @@ async function getConfig(
 
   return config;
 }
+
+/**
+ * TODO: implementation
+ * Returns an SQLite3 Database object
+ *
+ */
+function getDatabase() {}
 
 export default {
   getConfig,
