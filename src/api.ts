@@ -14,7 +14,7 @@ const dummyNote = {
  * @param {INote} note
  * @returns {INote}
  */
-export function addNote(note: INote): INote {
+function addNote(note: INote): INote {
   return dummyNote;
 }
 
@@ -25,7 +25,7 @@ export function addNote(note: INote): INote {
  * @param {Date} date
  * @returns {INote[]}
  */
-export function getNotesOnDay(date: Date): INote[] {
+function getNotesOnDay(date: Date): INote[] {
   return [dummyNote];
 }
 
@@ -35,4 +35,6 @@ export function getNotesOnDay(date: Date): INote[] {
  *
  * @param {Date} date
  */
-export function generateNotesForDay(date: Date): void {}
+function generateNotesForDay(date: Date): void {}
+
+export { generateNotesForDay, getNotesOnDay, addNote };
