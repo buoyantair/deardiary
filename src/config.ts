@@ -84,9 +84,10 @@ async function getConfig(configDir?: string): Promise<IConfiguration> {
 }
 
 /**
- *
  * Returns an SQLite3 Database object
  *
+ * @param {string} dataDir
+ * @returns
  */
 function getDatabase(dataDir: string) {
   const programPaths = getProgramPaths();
