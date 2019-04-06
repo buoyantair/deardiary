@@ -1,5 +1,5 @@
 import { constants as fsConstants, promises as fsPromises } from "fs";
-import { sqlite3 } from "sqlite3";
+import { open as sqliteOpen, Database } from "sqlite";
 
 export interface IConfiguration {
   diaryPath: string;
@@ -8,6 +8,10 @@ export interface IConfiguration {
 function getProgramPaths() {
   function configPath(configDir: string) {
     return `${configDir}/deardiary.settings`;
+  }
+
+  function dataPath(dataDir: string) {
+    return `${dataDir}/diary.sqlite`;
   }
 
   const { HOME, XDG_DATA_HOME, XDG_CONFIG_HOME } = process.env;
@@ -19,19 +23,19 @@ function getProgramPaths() {
     ? `${XDG_CONFIG_HOME}/deardiary`
     : `${HOME}/.config/deardiary`;
   const CONFIG_PATH = configPath(CONFIG_DIR);
-  const DATA_PATH = `${DATA_DIR}/diary.sqlite`;
+  const DATA_PATH = dataPath(DATA_DIR);
 
   return {
     DATA_DIR,
     DATA_PATH,
     CONFIG_DIR,
     CONFIG_PATH,
-    configPath
+    configPath,
+    dataPath
   };
 }
 
 async function generateConfig(
-  dataDir: string,
   configDir: string,
   configPath: string,
   config: IConfiguration
@@ -47,17 +51,13 @@ async function generateConfig(
     }
   }
 
-  return getConfig(dataDir, configDir);
+  return getConfig(configDir);
 }
 
-async function getConfig(
-  dataDir: string,
-  configDir: string
-): Promise<IConfiguration> {
+async function getConfig(configDir?: string): Promise<IConfiguration> {
   const programPaths = getProgramPaths();
-  const CONFIG_DIR = configDir || programPaths.CONFIG_DIR;
   const CONFIG_PATH = configDir
-    ? programPaths.configPath(CONFIG_DIR)
+    ? programPaths.configPath(configDir)
     : programPaths.CONFIG_PATH;
 
   let config;
@@ -88,7 +88,14 @@ async function getConfig(
  * Returns an SQLite3 Database object
  *
  */
-function getDatabase() {}
+function getDatabase(dataDir: string) {
+  const programPaths = getProgramPaths();
+  const DATA_PATH = dataDir
+    ? programPaths.dataPath(dataDir)
+    : programPaths.DATA_PATH;
+
+  return sqliteOpen(DATA_PATH, { promise: Promise });
+}
 
 export default {
   getConfig,
