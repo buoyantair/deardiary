@@ -4,6 +4,31 @@ export interface IConfiguration {
   diaryPath: string;
 }
 
+function getProgramPaths() {
+  function configPath(configDir: string) {
+    return `${configDir}/deardiary.settings`;
+  }
+
+  const { HOME, XDG_DATA_HOME, XDG_CONFIG_HOME } = process.env;
+
+  const DATA_DIR = XDG_DATA_HOME
+    ? `${XDG_DATA_HOME}/deardiary`
+    : `${HOME}/.local/share/deardiary`;
+  const CONFIG_DIR = XDG_CONFIG_HOME
+    ? `${XDG_CONFIG_HOME}/deardiary`
+    : `${HOME}/.config/deardiary`;
+  const CONFIG_PATH = configPath(CONFIG_DIR);
+  const DATA_PATH = `${DATA_DIR}/diary.sqlite`;
+
+  return {
+    DATA_DIR,
+    DATA_PATH,
+    CONFIG_DIR,
+    CONFIG_PATH,
+    configPath
+  };
+}
+
 async function generateConfig(
   dataDir: string,
   configDir: string,
@@ -28,28 +53,11 @@ async function getConfig(
   dataDir: string,
   configDir: string
 ): Promise<IConfiguration> {
-  const { HOME, XDG_DATA_HOME, XDG_CONFIG_HOME } = process.env;
-
-  let DATA_DIR,
-    CONFIG_DIR,
-    CONFIG_PATH = null;
-
-  if (dataDir !== undefined) {
-    DATA_DIR = dataDir;
-  } else {
-    DATA_DIR = XDG_DATA_HOME
-      ? `${XDG_DATA_HOME}/deardiary`
-      : `${HOME}/.local/share/deardiary`;
-  }
-
-  if (configDir !== undefined) {
-    CONFIG_DIR = configDir;
-  } else {
-    CONFIG_DIR = XDG_CONFIG_HOME
-      ? `${XDG_CONFIG_HOME}/deardiary`
-      : `${HOME}/.config/deardiary`;
-  }
-  CONFIG_PATH = `${CONFIG_DIR}/deardiary.settings`;
+  const programPaths = getProgramPaths();
+  const CONFIG_DIR = configDir || programPaths.CONFIG_DIR;
+  const CONFIG_PATH = configDir
+    ? programPaths.configPath(CONFIG_DIR)
+    : programPaths.CONFIG_PATH;
 
   let config;
   try {
