@@ -1,9 +1,9 @@
 import { constants as fsConstants, promises as fsPromises } from "fs";
 import ConfigurationManager, { IConfiguration } from "../config";
-import { Database } from "sqlite3";
+import { Database } from "sqlite";
 const CACHE_PATH = `${__dirname}/cache`;
 const CACHE_CONFIG_DIR_PATH = `${CACHE_PATH}/config`;
-const CACHE_DATA_DIR_PATH = `${CACHE_PATH}/data`;
+const CACHE_DATA_DIR_PATH = `${CACHE_PATH}/data.sqlite`;
 const CACHE_CONFIG_PATH = `${CACHE_CONFIG_DIR_PATH}/deardiary.settings`;
 
 describe("Configuration Management", () => {
@@ -14,7 +14,6 @@ describe("Configuration Management", () => {
       };
       try {
         const generatedConfig = await ConfigurationManager.generateConfig(
-          CACHE_DATA_DIR_PATH,
           CACHE_CONFIG_DIR_PATH,
           CACHE_CONFIG_PATH,
           inputConfig
@@ -39,7 +38,6 @@ describe("Configuration Management", () => {
       };
       try {
         generatedConfig = await ConfigurationManager.generateConfig(
-          CACHE_DATA_DIR_PATH,
           CACHE_CONFIG_DIR_PATH,
           CACHE_CONFIG_PATH,
           exampleConfig
@@ -51,7 +49,6 @@ describe("Configuration Management", () => {
 
     test("getConfig should read the config file & return a config object with relevant properties", async () => {
       const result = await ConfigurationManager.getConfig(
-        CACHE_DATA_DIR_PATH,
         CACHE_CONFIG_DIR_PATH
       );
 
@@ -61,9 +58,9 @@ describe("Configuration Management", () => {
   });
 
   describe("getDatabase()", () => {
-    test("Returns a new database object when called", () => {
-      const database = ConfigurationManager.getDatabase();
-      expect(database).toBeInstanceOf(Database);
+    test("Returns a new database object when called", async () => {
+      const database = await ConfigurationManager.getDatabase(CACHE_PATH);
+      expect(database).toBeTruthy();
     });
   });
 });
