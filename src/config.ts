@@ -84,7 +84,7 @@ async function getConfig(configDir?: string): Promise<IConfiguration> {
 }
 
 /**
- * TODO: implementation
+ *
  * Returns an SQLite3 Database object
  *
  */
