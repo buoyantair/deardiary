@@ -1,10 +1,12 @@
 import { constants as fsConstants, promises as fsPromises } from "fs";
 import ConfigurationManager, { IConfiguration } from "../config";
 import { Database } from "sqlite";
-const CACHE_PATH = `${__dirname}/cache`;
-const CACHE_CONFIG_DIR_PATH = `${CACHE_PATH}/config`;
-const CACHE_DATA_DIR_PATH = `${CACHE_PATH}/data.sqlite`;
-const CACHE_CONFIG_PATH = `${CACHE_CONFIG_DIR_PATH}/deardiary.settings`;
+import {
+  CACHE_PATH,
+  CACHE_CONFIG_DIR_PATH,
+  CACHE_DATA_DIR_PATH,
+  CACHE_CONFIG_PATH
+} from "./index";
 
 describe("Configuration Management", () => {
   describe("generateConfig()", () => {
