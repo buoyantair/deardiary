@@ -6,8 +6,8 @@
   "scripts": {
     "watch": "tsc -w",
     "build": "tsc",
-    "test": "jest",
-    "test:watch": "jest --watch",
+    "test": "jest --testPathIgnorePatterns '<rootDir>/src/__tests__/index.ts'",
+    "test:watch": "jest --watch --testPathIgnorePatterns '<rootDir>/src/__tests__/index.ts'",
     "release": "standard-version"
   },
   "repository": {
