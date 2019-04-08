@@ -64,5 +64,17 @@ describe("Configuration Management", () => {
       const database = await ConfigurationManager.getDatabase(CACHE_PATH);
       expect(database).toBeTruthy();
     });
+
+    test("Database file exists in the cache directory", async () => {
+      try {
+        await ConfigurationManager.getDatabase(CACHE_PATH);
+        await fsPromises.access(
+          `${CACHE_PATH}/diary.sqlite`,
+          fsConstants.R_OK && fsConstants.W_OK
+        );
+      } catch (e) {
+        throw e;
+      }
+    });
   });
 });
