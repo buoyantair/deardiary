@@ -61,7 +61,7 @@ describe("Configuration Management", () => {
 
   describe("getDatabase()", () => {
     test("Returns a new database object when called", async () => {
-      const database = await ConfigurationManager.getDatabase(CACHE_PATH);
+      const database: Database = await ConfigurationManager.getDatabase(CACHE_PATH);
       expect(database).toBeTruthy();
     });
 
