@@ -14,7 +14,7 @@ const dummyNote = {
  * @param {INote} note
  * @returns {INote}
  */
-function addNote(note: INote): INote {
+async function addNote(note: INote): Promise<INote> {
   return dummyNote;
 }
 
@@ -25,7 +25,7 @@ function addNote(note: INote): INote {
  * @param {Date} date
  * @returns {INote[]}
  */
-function getNotesOnDay(date: Date): INote[] {
+async function getNotesOnDay(date: Date): Promise<INote[]> {
   return [dummyNote];
 }
 
