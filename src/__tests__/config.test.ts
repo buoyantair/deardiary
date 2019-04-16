@@ -67,9 +67,9 @@ describe("Configuration Management", () => {
 
     test("Database file exists in the cache directory", async () => {
       try {
-        await ConfigurationManager.getDatabase(CACHE_PATH);
+        await ConfigurationManager.getDatabase(CACHE_DATA_DIR_PATH);
         await fsPromises.access(
-          `${CACHE_PATH}/diary.sqlite`,
+          `${CACHE_DATA_DIR_PATH}/diary.sqlite`,
           fsConstants.R_OK && fsConstants.W_OK
         );
       } catch (e) {
